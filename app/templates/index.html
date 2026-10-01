@@ -1,0 +1,583 @@
+{% extends "base.html" %}
+
+{% block title %}Home · PhoneValue AI{% endblock %}
+
+{% block extra_css %}
+<style>
+    .hero {
+        padding: 100px 0 80px;
+        position: relative;
+    }
+
+    .hero-inner {
+        display: grid;
+        grid-template-columns: 1.1fr 0.9fr;
+        gap: 60px;
+        align-items: center;
+    }
+
+    .hero-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        background: var(--card);
+        backdrop-filter: blur(10px);
+        border: 1px solid var(--border-strong);
+        color: var(--primary-light);
+        padding: 10px 22px;
+        border-radius: 50px;
+        font-size: 0.8rem;
+        font-weight: 600;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        margin-bottom: 30px;
+        animation: fadeInUp 0.8s ease;
+    }
+
+    .hero-badge i {
+        animation: sparkle 2s ease-in-out infinite;
+    }
+
+    @keyframes sparkle {
+        0%, 100% { transform: rotate(0deg) scale(1); }
+        50% { transform: rotate(180deg) scale(1.2); }
+    }
+
+    .hero h1 {
+        font-size: 4rem;
+        line-height: 1.05;
+        color: var(--text);
+        margin-bottom: 25px;
+        animation: fadeInUp 0.8s ease 0.1s backwards;
+    }
+
+    .hero h1 em {
+        font-style: italic;
+        background: var(--gradient-text);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        position: relative;
+        display: inline-block;
+    }
+
+    .hero p {
+        font-size: 1.15rem;
+        color: var(--text-secondary);
+        line-height: 1.8;
+        margin-bottom: 40px;
+        max-width: 520px;
+        animation: fadeInUp 0.8s ease 0.2s backwards;
+    }
+
+    .hero-buttons {
+        display: flex;
+        gap: 15px;
+        flex-wrap: wrap;
+        animation: fadeInUp 0.8s ease 0.3s backwards;
+    }
+
+    @keyframes fadeInUp {
+        from { opacity: 0; transform: translateY(30px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Hero Visual */
+    .hero-visual {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        animation: fadeInUp 0.8s ease 0.4s backwards;
+    }
+
+    .phone-mockup {
+        width: 300px;
+        height: 580px;
+        background: var(--gradient);
+        border-radius: 45px;
+        padding: 14px;
+        box-shadow: 
+            0 40px 80px rgba(139, 92, 246, 0.4),
+            0 0 0 12px var(--card-solid),
+            0 0 0 14px var(--border-strong);
+        position: relative;
+        transform: rotate(-5deg);
+        transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+        animation: phone-float 6s ease-in-out infinite;
+    }
+
+    @keyframes phone-float {
+        0%, 100% { transform: rotate(-5deg) translateY(0); }
+        50% { transform: rotate(-5deg) translateY(-20px); }
+    }
+
+    .phone-mockup:hover {
+        transform: rotate(0deg) scale(1.05);
+        animation-play-state: paused;
+    }
+
+    .phone-screen {
+        width: 100%;
+        height: 100%;
+        background: var(--bg);
+        border-radius: 35px;
+        padding: 40px 25px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        text-align: center;
+        overflow: hidden;
+        position: relative;
+    }
+
+    .phone-screen::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: radial-gradient(circle at 50% 0%, rgba(139, 92, 246, 0.2), transparent 70%);
+        pointer-events: none;
+    }
+
+    .phone-screen-icon {
+        font-size: 4rem;
+        margin-bottom: 20px;
+        filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.6));
+        animation: pulse 2s ease-in-out infinite;
+    }
+
+    .mini-label {
+        font-size: 0.75rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.15em;
+        font-weight: 600;
+    }
+
+    .mini-price {
+        font-size: 2.5rem;
+        font-weight: 800;
+        font-family: 'Space Grotesk', sans-serif;
+        background: var(--gradient-text);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin: 8px 0;
+    }
+
+    .floating-tag {
+        position: absolute;
+        background: var(--card);
+        backdrop-filter: blur(20px);
+        padding: 14px 22px;
+        border-radius: 50px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        color: var(--text);
+        box-shadow: var(--shadow-lg);
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        border: 1px solid var(--border-strong);
+        white-space: nowrap;
+    }
+
+    .tag-1 {
+        top: 60px;
+        left: -40px;
+        animation: tag-float 4s ease-in-out infinite;
+    }
+
+    .tag-2 {
+        bottom: 100px;
+        right: -50px;
+        animation: tag-float 4s ease-in-out infinite 2s;
+    }
+
+    @keyframes tag-float {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-15px); }
+    }
+
+    /* Stats Section */
+    .stats-section {
+        padding: 80px 0;
+    }
+
+    .stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 25px;
+    }
+
+    .stat-card {
+        background: var(--card);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 40px 25px;
+        text-align: center;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .stat-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: var(--gradient);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.5s;
+    }
+
+    .stat-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .stat-card:hover {
+        transform: translateY(-10px);
+        box-shadow: var(--shadow-lg);
+        border-color: var(--border-strong);
+    }
+
+    .stat-icon {
+        width: 60px;
+        height: 60px;
+        background: var(--gradient);
+        border-radius: 18px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.6rem;
+        margin: 0 auto 20px;
+        box-shadow: var(--glow-primary);
+    }
+
+    .stat-value {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 2.2rem;
+        font-weight: 700;
+        background: var(--gradient-text);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 8px;
+    }
+
+    .stat-label {
+        font-size: 0.85rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-weight: 600;
+    }
+
+    /* Features Section */
+    .features-section {
+        padding: 100px 0;
+    }
+
+    .section-heading {
+        text-align: center;
+        margin-bottom: 70px;
+    }
+
+    .section-heading .eyebrow {
+        color: var(--primary-light);
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        margin-bottom: 15px;
+        display: block;
+    }
+
+    .section-heading h2 {
+        font-size: 3rem;
+        color: var(--text);
+        margin-bottom: 18px;
+    }
+
+    .section-heading p {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .features-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 30px;
+    }
+
+    .feature-card {
+        background: var(--card);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        padding: 45px 35px;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .feature-card::after {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 200px;
+        height: 200px;
+        background: radial-gradient(circle, rgba(139, 92, 246, 0.2), transparent 70%);
+        border-radius: 50%;
+        transition: all 0.6s;
+        opacity: 0;
+    }
+
+    .feature-card:hover::after {
+        opacity: 1;
+        top: -30%;
+        right: -30%;
+    }
+
+    .feature-card:hover {
+        transform: translateY(-10px) scale(1.02);
+        border-color: var(--border-strong);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .feature-icon {
+        width: 70px;
+        height: 70px;
+        background: var(--gradient);
+        border-radius: 22px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        margin-bottom: 28px;
+        color: white;
+        box-shadow: var(--glow-primary);
+        transition: transform 0.4s;
+    }
+
+    .feature-card:hover .feature-icon {
+        transform: rotate(-8deg) scale(1.1);
+    }
+
+    .feature-card h3 {
+        font-size: 1.35rem;
+        color: var(--text);
+        margin-bottom: 14px;
+        font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .feature-card p {
+        color: var(--text-secondary);
+        font-size: 0.95rem;
+        line-height: 1.75;
+    }
+
+    /* CTA */
+    .cta-section {
+        padding: 80px 0 100px;
+    }
+
+    .cta-card {
+        background: var(--gradient);
+        border-radius: 32px;
+        padding: 80px 60px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 30px 80px rgba(139, 92, 246, 0.4);
+    }
+
+    .cta-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 70%);
+        border-radius: 50%;
+        animation: float-orb 15s ease-in-out infinite;
+    }
+
+    .cta-card::after {
+        content: '';
+        position: absolute;
+        bottom: -50%;
+        left: -10%;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(255,255,255,0.1), transparent 70%);
+        border-radius: 50%;
+        animation: float-orb 15s ease-in-out infinite 5s;
+    }
+
+    .cta-card h2 {
+        color: white;
+        font-size: 2.8rem;
+        margin-bottom: 18px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .cta-card p {
+        color: rgba(255,255,255,0.9);
+        font-size: 1.15rem;
+        margin-bottom: 40px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .cta-card .btn-primary {
+        background: white;
+        color: var(--primary);
+        position: relative;
+        z-index: 1;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .cta-card .btn-primary:hover {
+        background: var(--card-solid);
+        color: var(--primary);
+    }
+
+    @media (max-width: 968px) {
+        .hero-inner { grid-template-columns: 1fr; text-align: center; }
+        .hero h1 { font-size: 2.5rem; }
+        .hero p { margin-left: auto; margin-right: auto; }
+        .hero-buttons { justify-content: center; }
+        .hero-visual { margin-top: 50px; }
+        .stats-grid { grid-template-columns: repeat(2, 1fr); }
+        .features-grid { grid-template-columns: 1fr; }
+        .section-heading h2 { font-size: 2rem; }
+        .cta-card { padding: 50px 30px; }
+        .cta-card h2 { font-size: 1.8rem; }
+        .tag-1 { left: -10px; }
+        .tag-2 { right: -10px; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<section class="hero">
+    <div class="container">
+        <div class="hero-inner">
+            <div>
+                <div class="hero-badge">
+                    <i class="bi bi-stars"></i> AI-Powered Prediction
+                </div>
+                <h1>Know what your phone is <em>really worth</em>.</h1>
+                <p>Get accurate resale value predictions for your smartphone in seconds. Powered by machine learning trained on thousands of real market data points.</p>
+                <div class="hero-buttons">
+                    <a href="/predict" class="btn-primary">
+                        <i class="bi bi-magic"></i> Predict Now
+                    </a>
+                    <a href="/analytics" class="btn-outline">
+                        <i class="bi bi-bar-chart"></i> View Analytics
+                    </a>
+                </div>
+            </div>
+            <div class="hero-visual">
+                <div class="phone-mockup">
+                    <div class="phone-screen">
+                        <div class="phone-screen-icon">📱</div>
+                        <div class="mini-label">Estimated Value</div>
+                        <div class="mini-price">₹42,500</div>
+                        <div class="mini-label" style="margin-top: 10px; color: var(--success);">Value Retained: 85%</div>
+                    </div>
+                </div>
+                <div class="floating-tag tag-1">
+                    <i class="bi bi-check-circle-fill" style="color: var(--success);"></i>
+                    95% Accuracy
+                </div>
+                <div class="floating-tag tag-2">
+                    <i class="bi bi-lightning-charge-fill" style="color: var(--accent);"></i>
+                    Instant Results
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="stats-section">
+    <div class="container">
+        <div class="stats-grid">
+            <div class="stat-card" data-aos="fade-up" data-aos-delay="0">
+                <div class="stat-icon">📊</div>
+                <div class="stat-value">1,500+</div>
+                <div class="stat-label">Records</div>
+            </div>
+            <div class="stat-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="stat-icon">🎯</div>
+                <div class="stat-value">95%</div>
+                <div class="stat-label">Accuracy</div>
+            </div>
+            <div class="stat-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="stat-icon">🏷️</div>
+                <div class="stat-value">5</div>
+                <div class="stat-label">Brands</div>
+            </div>
+            <div class="stat-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="stat-icon">⚡</div>
+                <div class="stat-value">&lt;1s</div>
+                <div class="stat-label">Response</div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="features-section">
+    <div class="container">
+        <div class="section-heading" data-aos="fade-up">
+            <span class="eyebrow">Why PhoneValue</span>
+            <h2>Built for accuracy and simplicity</h2>
+            <p>Every prediction is backed by a robust machine learning model trained on carefully curated smartphone data.</p>
+        </div>
+        <div class="features-grid">
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="0">
+                <div class="feature-icon"><i class="bi bi-cpu"></i></div>
+                <h3>Machine Learning</h3>
+                <p>Random Forest algorithm trained on 1,500+ records with 9 different features for accurate predictions.</p>
+            </div>
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="feature-icon"><i class="bi bi-graph-up-arrow"></i></div>
+                <h3>Data Insights</h3>
+                <p>Explore detailed analytics showing how brand, age, condition, and specs affect resale value.</p>
+            </div>
+            <div class="feature-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="feature-icon"><i class="bi bi-lightning"></i></div>
+                <h3>Real-time Results</h3>
+                <p>Get predictions instantly with our optimized Flask API. No waiting, no delays.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-card" data-aos="zoom-in">
+            <h2>Ready to find your phone's value?</h2>
+            <p>Get an instant resale price prediction in just a few clicks.</p>
+            <a href="/predict" class="btn-primary">
+                <i class="bi bi-magic"></i> Start Prediction
+            </a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

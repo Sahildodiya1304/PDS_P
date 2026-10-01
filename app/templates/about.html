@@ -1,0 +1,606 @@
+{% extends "base.html" %}
+
+{% block title %}About · PhoneValue AI{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        padding: 80px 0 50px;
+        text-align: center;
+    }
+
+    .page-header .eyebrow {
+        color: var(--primary-light);
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        margin-bottom: 15px;
+        display: block;
+    }
+
+    .page-header h1 {
+        font-size: 3rem;
+        color: var(--text);
+        margin-bottom: 18px;
+    }
+
+    .page-header p {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        max-width: 650px;
+        margin: 0 auto;
+    }
+
+    .about-section {
+        padding: 50px 0 100px;
+    }
+
+    /* About Grid */
+    .about-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 35px;
+        margin-bottom: 80px;
+    }
+
+    .about-card {
+        background: var(--card);
+        backdrop-filter: blur(20px);
+        -webkit-backdrop-filter: blur(20px);
+        border-radius: 26px;
+        padding: 45px;
+        border: 1px solid var(--border);
+        transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .about-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -50%;
+        width: 300px;
+        height: 300px;
+        background: radial-gradient(circle, rgba(139, 92, 246, 0.15), transparent 70%);
+        border-radius: 50%;
+        opacity: 0;
+        transition: all 0.7s;
+    }
+
+    .about-card:hover::before {
+        opacity: 1;
+        top: -30%;
+        right: -30%;
+    }
+
+    .about-card:hover {
+        transform: translateY(-8px);
+        border-color: var(--border-strong);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .about-card h2 {
+        font-size: 1.7rem;
+        color: var(--text);
+        margin-bottom: 22px;
+        font-family: 'Space Grotesk', sans-serif;
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .about-card h2 .heading-icon {
+        width: 50px;
+        height: 50px;
+        background: var(--gradient);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.4rem;
+        box-shadow: var(--glow-primary);
+        flex-shrink: 0;
+    }
+
+    .about-card p {
+        color: var(--text-secondary);
+        line-height: 1.85;
+        margin-bottom: 16px;
+        font-size: 0.98rem;
+        position: relative;
+        z-index: 1;
+    }
+
+    .about-card p:last-child {
+        margin-bottom: 0;
+    }
+
+    /* Tech Stack Grid */
+    .tech-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+        margin-top: 25px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .tech-item {
+        background: var(--bg-secondary);
+        border: 1px solid var(--border);
+        padding: 16px 20px;
+        border-radius: 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        font-size: 0.9rem;
+        font-weight: 600;
+        color: var(--text);
+        transition: all 0.3s;
+        cursor: default;
+    }
+
+    .tech-item:hover {
+        transform: translateY(-4px) scale(1.02);
+        border-color: var(--primary);
+        background: var(--card-hover);
+        box-shadow: var(--glow-primary);
+    }
+
+    .tech-icon {
+        width: 36px;
+        height: 36px;
+        background: var(--gradient);
+        border-radius: 10px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1rem;
+        flex-shrink: 0;
+        box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
+    }
+
+    /* Section Title */
+    .section-title-2 {
+        text-align: center;
+        margin-bottom: 50px;
+    }
+
+    .section-title-2 .eyebrow {
+        color: var(--primary-light);
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        margin-bottom: 15px;
+        display: block;
+    }
+
+    .section-title-2 h2 {
+        font-size: 2.5rem;
+        color: var(--text);
+        margin-bottom: 15px;
+        font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .section-title-2 p {
+        color: var(--text-secondary);
+        font-size: 1.05rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    /* Steps Grid */
+    .steps-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 25px;
+        position: relative;
+    }
+
+    /* Connector Line */
+    .steps-grid::before {
+        content: '';
+        position: absolute;
+        top: 40px;
+        left: 12%;
+        right: 12%;
+        height: 2px;
+        background: linear-gradient(90deg, 
+            transparent, 
+            var(--primary) 20%, 
+            var(--accent) 50%, 
+            var(--primary) 80%, 
+            transparent);
+        opacity: 0.3;
+        z-index: 0;
+    }
+
+    .step-card {
+        text-align: center;
+        padding: 40px 22px;
+        background: var(--card);
+        backdrop-filter: blur(20px);
+        border-radius: 22px;
+        border: 1px solid var(--border);
+        position: relative;
+        transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        z-index: 1;
+    }
+
+    .step-card:hover {
+        transform: translateY(-10px);
+        border-color: var(--border-strong);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .step-number {
+        width: 58px;
+        height: 58px;
+        background: var(--gradient);
+        color: white;
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.4rem;
+        font-weight: 700;
+        margin: 0 auto 22px;
+        box-shadow: var(--glow-primary);
+        transition: transform 0.4s;
+        position: relative;
+    }
+
+    .step-number::after {
+        content: '';
+        position: absolute;
+        inset: -6px;
+        border-radius: 50%;
+        border: 2px solid var(--primary);
+        opacity: 0;
+        animation: none;
+    }
+
+    .step-card:hover .step-number {
+        transform: scale(1.15) rotate(360deg);
+    }
+
+    .step-card:hover .step-number::after {
+        opacity: 1;
+        animation: pulse-ring 1.5s ease-out infinite;
+    }
+
+    @keyframes pulse-ring {
+        0% { transform: scale(1); opacity: 0.8; }
+        100% { transform: scale(1.4); opacity: 0; }
+    }
+
+    .step-card h3 {
+        font-size: 1.1rem;
+        color: var(--text);
+        margin-bottom: 12px;
+        font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .step-card p {
+        font-size: 0.87rem;
+        color: var(--muted);
+        line-height: 1.65;
+    }
+
+    /* Achievement Stats */
+    .achievement-section {
+        margin-top: 80px;
+    }
+
+    .achievement-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 25px;
+    }
+
+    .achievement-card {
+        background: var(--card);
+        backdrop-filter: blur(20px);
+        border-radius: 22px;
+        padding: 40px 30px;
+        border: 1px solid var(--border);
+        text-align: center;
+        transition: all 0.4s;
+        position: relative;
+        overflow: hidden;
+    }
+
+    .achievement-card::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 3px;
+        background: var(--gradient);
+        transform: scaleX(0);
+        transform-origin: left;
+        transition: transform 0.6s;
+    }
+
+    .achievement-card:hover::before {
+        transform: scaleX(1);
+    }
+
+    .achievement-card:hover {
+        transform: translateY(-8px);
+        border-color: var(--border-strong);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .achievement-icon {
+        font-size: 2.8rem;
+        margin-bottom: 20px;
+        display: block;
+        filter: drop-shadow(0 0 20px rgba(139, 92, 246, 0.4));
+    }
+
+    .achievement-value {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 2.4rem;
+        font-weight: 800;
+        background: var(--gradient-text);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        margin-bottom: 8px;
+        line-height: 1;
+    }
+
+    .achievement-label {
+        color: var(--text-secondary);
+        font-size: 0.9rem;
+        font-weight: 600;
+    }
+
+    /* CTA */
+    .cta-section {
+        padding: 80px 0 40px;
+    }
+
+    .cta-card {
+        background: var(--gradient);
+        border-radius: 32px;
+        padding: 70px 60px;
+        text-align: center;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 30px 80px rgba(139, 92, 246, 0.4);
+    }
+
+    .cta-card::before {
+        content: '';
+        position: absolute;
+        top: -50%;
+        right: -10%;
+        width: 500px;
+        height: 500px;
+        background: radial-gradient(circle, rgba(255,255,255,0.15), transparent 70%);
+        border-radius: 50%;
+        animation: float-orb 15s ease-in-out infinite;
+    }
+
+    .cta-card::after {
+        content: '';
+        position: absolute;
+        bottom: -50%;
+        left: -10%;
+        width: 400px;
+        height: 400px;
+        background: radial-gradient(circle, rgba(255,255,255,0.1), transparent 70%);
+        border-radius: 50%;
+        animation: float-orb 15s ease-in-out infinite 5s;
+    }
+
+    .cta-card h2 {
+        color: white;
+        font-size: 2.5rem;
+        margin-bottom: 18px;
+        position: relative;
+        z-index: 1;
+        font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .cta-card p {
+        color: rgba(255,255,255,0.9);
+        font-size: 1.1rem;
+        margin-bottom: 35px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .cta-card .btn-primary {
+        background: white;
+        color: var(--primary);
+        position: relative;
+        z-index: 1;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+    }
+
+    .cta-card .btn-primary:hover {
+        background: var(--card-solid);
+        color: var(--primary);
+    }
+
+    /* Responsive */
+    @media (max-width: 968px) {
+        .about-grid {
+            grid-template-columns: 1fr;
+        }
+        .steps-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        .steps-grid::before {
+            display: none;
+        }
+        .achievement-grid {
+            grid-template-columns: 1fr;
+        }
+        .page-header h1 {
+            font-size: 2rem;
+        }
+        .section-title-2 h2 {
+            font-size: 1.8rem;
+        }
+        .cta-card {
+            padding: 50px 30px;
+        }
+        .cta-card h2 {
+            font-size: 1.8rem;
+        }
+    }
+
+    @media (max-width: 600px) {
+        .steps-grid {
+            grid-template-columns: 1fr;
+        }
+        .tech-grid {
+            grid-template-columns: 1fr;
+        }
+        .about-card {
+            padding: 30px;
+        }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<!-- PAGE HEADER -->
+<section class="page-header">
+    <div class="container">
+        <span class="eyebrow" data-aos="fade-up">ℹ️ About Project</span>
+        <h1 data-aos="fade-up" data-aos-delay="100">About PhoneValue AI</h1>
+        <p data-aos="fade-up" data-aos-delay="200">A Python for Data Science mini project combining machine learning and web development.</p>
+    </div>
+</section>
+
+<!-- ABOUT -->
+<section class="about-section">
+    <div class="container">
+        
+        <div class="about-grid">
+            <div class="about-card" data-aos="fade-right">
+                <h2>
+                    <div class="heading-icon">🎯</div>
+                    The Project
+                </h2>
+                <p>PhoneValue AI is a complete data science project that predicts the resale value of used smartphones using machine learning.</p>
+                <p>The system was trained on 1,500+ records containing smartphone details such as brand, age, RAM, storage, battery health, condition, and original price.</p>
+                <p>Using a Random Forest Regressor, we achieved over 95% accuracy in predicting resale prices. The complete pipeline includes data generation, cleaning, EDA, feature engineering, model training, and deployment via Flask.</p>
+            </div>
+
+            <div class="about-card" data-aos="fade-left">
+                <h2>
+                    <div class="heading-icon">🛠️</div>
+                    Tech Stack
+                </h2>
+                <p>Built entirely in Python with industry-standard data science libraries:</p>
+                <div class="tech-grid">
+                    <div class="tech-item">
+                        <span class="tech-icon">🐍</span> Python
+                    </div>
+                    <div class="tech-item">
+                        <span class="tech-icon">🐼</span> Pandas
+                    </div>
+                    <div class="tech-item">
+                        <span class="tech-icon">🔢</span> NumPy
+                    </div>
+                    <div class="tech-item">
+                        <span class="tech-icon">📊</span> Matplotlib
+                    </div>
+                    <div class="tech-item">
+                        <span class="tech-icon">🎨</span> Seaborn
+                    </div>
+                    <div class="tech-item">
+                        <span class="tech-icon">🤖</span> Scikit-learn
+                    </div>
+                    <div class="tech-item">
+                        <span class="tech-icon">🌶️</span> Flask
+                    </div>
+                    <div class="tech-item">
+                        <span class="tech-icon">💾</span> Joblib
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- How It Works -->
+        <div class="section-title-2" data-aos="fade-up">
+            <span class="eyebrow">🚀 Process</span>
+            <h2>How It Works</h2>
+            <p>The complete data science pipeline from raw data to production-ready ML model.</p>
+        </div>
+
+        <div class="steps-grid">
+            <div class="step-card" data-aos="fade-up" data-aos-delay="0">
+                <div class="step-number">1</div>
+                <h3>Data Collection</h3>
+                <p>Generated 1,500 synthetic smartphone records with realistic pricing patterns</p>
+            </div>
+            <div class="step-card" data-aos="fade-up" data-aos-delay="100">
+                <div class="step-number">2</div>
+                <h3>EDA & Cleaning</h3>
+                <p>Analyzed patterns, removed outliers, and created 8 insightful visualizations</p>
+            </div>
+            <div class="step-card" data-aos="fade-up" data-aos-delay="200">
+                <div class="step-number">3</div>
+                <h3>Model Training</h3>
+                <p>Trained 3 ML models and selected Random Forest as the best performer</p>
+            </div>
+            <div class="step-card" data-aos="fade-up" data-aos-delay="300">
+                <div class="step-number">4</div>
+                <h3>Web Deployment</h3>
+                <p>Built a beautiful Flask dashboard for real-time predictions</p>
+            </div>
+        </div>
+
+        <!-- Achievements -->
+        <div class="achievement-section">
+            <div class="achievement-grid">
+                <div class="achievement-card" data-aos="zoom-in" data-aos-delay="0">
+                    <span class="achievement-icon">📊</span>
+                    <div class="achievement-value">1,500+</div>
+                    <div class="achievement-label">Records Analyzed</div>
+                </div>
+                <div class="achievement-card" data-aos="zoom-in" data-aos-delay="100">
+                    <span class="achievement-icon">🎯</span>
+                    <div class="achievement-value">95%+</div>
+                    <div class="achievement-label">Model Accuracy</div>
+                </div>
+                <div class="achievement-card" data-aos="zoom-in" data-aos-delay="200">
+                    <span class="achievement-icon">⚡</span>
+                    <div class="achievement-value">&lt;1s</div>
+                    <div class="achievement-label">Prediction Time</div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta-section">
+    <div class="container">
+        <div class="cta-card" data-aos="zoom-in">
+            <h2>Want to try it yourself?</h2>
+            <p>Get an instant resale price prediction for your smartphone.</p>
+            <a href="/predict" class="btn-primary">
+                <i class="bi bi-magic"></i> Try Prediction
+            </a>
+        </div>
+    </div>
+</section>
+
+{% endblock %}

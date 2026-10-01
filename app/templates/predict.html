@@ -1,0 +1,562 @@
+{% extends "base.html" %}
+
+{% block title %}Predict · PhoneValue AI{% endblock %}
+
+{% block extra_css %}
+<style>
+    .page-header {
+        padding: 80px 0 50px;
+        text-align: center;
+    }
+
+    .page-header .eyebrow {
+        color: var(--primary-light);
+        font-size: 0.85rem;
+        font-weight: 600;
+        letter-spacing: 0.2em;
+        text-transform: uppercase;
+        margin-bottom: 15px;
+        display: block;
+    }
+
+    .page-header h1 {
+        font-size: 3rem;
+        color: var(--text);
+        margin-bottom: 18px;
+    }
+
+    .page-header p {
+        color: var(--text-secondary);
+        font-size: 1.1rem;
+        max-width: 600px;
+        margin: 0 auto;
+    }
+
+    .predict-grid {
+        display: grid;
+        grid-template-columns: 1.2fr 0.8fr;
+        gap: 35px;
+        padding: 40px 0 100px;
+    }
+
+    .card {
+        background: var(--card);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--border);
+        border-radius: 28px;
+        padding: 45px;
+        transition: all 0.4s;
+    }
+
+    .card:hover {
+        border-color: var(--border-strong);
+        box-shadow: var(--shadow-lg);
+    }
+
+    .card-title {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        margin-bottom: 35px;
+        padding-bottom: 25px;
+        border-bottom: 1px solid var(--border);
+    }
+
+    .card-title-icon {
+        width: 50px;
+        height: 50px;
+        background: var(--gradient);
+        border-radius: 15px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: white;
+        font-size: 1.3rem;
+        box-shadow: var(--glow-primary);
+    }
+
+    .card-title h2 {
+        font-size: 1.4rem;
+        color: var(--text);
+        font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .form-grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 22px;
+    }
+
+    .form-group {
+        display: flex;
+        flex-direction: column;
+        gap: 10px;
+        position: relative;
+    }
+
+    .form-group.full {
+        grid-column: span 2;
+    }
+
+    .form-group label {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--text-secondary);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+    }
+
+    .form-group select,
+    .form-group input {
+        padding: 15px 18px;
+        border: 1.5px solid var(--border);
+        border-radius: 14px;
+        font-size: 0.95rem;
+        font-family: 'Inter', sans-serif;
+        background: var(--bg-secondary);
+        color: var(--text);
+        transition: all 0.3s;
+        outline: none;
+    }
+
+    .form-group select:focus,
+    .form-group input:focus {
+        border-color: var(--primary);
+        background: var(--card-solid);
+        box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15), var(--glow-primary);
+        transform: translateY(-2px);
+    }
+
+    .form-group select:hover,
+    .form-group input:hover {
+        border-color: var(--border-strong);
+    }
+
+    .btn-submit {
+        grid-column: span 2;
+        padding: 18px;
+        background: var(--gradient);
+        color: white;
+        border: none;
+        border-radius: 14px;
+        font-size: 1rem;
+        font-weight: 700;
+        font-family: 'Inter', sans-serif;
+        cursor: pointer;
+        transition: all 0.3s;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 15px;
+        box-shadow: var(--glow-primary);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .btn-submit::before {
+        content: '';
+        position: absolute;
+        top: 0;
+        left: -100%;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
+        transition: left 0.6s;
+    }
+
+    .btn-submit:hover::before {
+        left: 100%;
+    }
+
+    .btn-submit:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 20px 50px rgba(139, 92, 246, 0.5);
+    }
+
+    .btn-submit:disabled {
+        opacity: 0.7;
+        cursor: not-allowed;
+        transform: none;
+    }
+
+    .result-card {
+        background: var(--card);
+        backdrop-filter: blur(20px);
+        border: 1px solid var(--border);
+        border-radius: 28px;
+        padding: 45px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        min-height: 550px;
+        position: sticky;
+        top: 100px;
+        transition: all 0.4s;
+    }
+
+    .result-card:hover {
+        border-color: var(--border-strong);
+    }
+
+    .result-placeholder {
+        text-align: center;
+        color: var(--muted);
+    }
+
+    .result-placeholder .ph-icon {
+        font-size: 4.5rem;
+        margin-bottom: 25px;
+        opacity: 0.4;
+        animation: pulse 3s ease-in-out infinite;
+    }
+
+    .result-placeholder h3 {
+        font-size: 1.3rem;
+        color: var(--text);
+        margin-bottom: 10px;
+        font-family: 'Space Grotesk', sans-serif;
+    }
+
+    .result-placeholder p {
+        font-size: 0.9rem;
+    }
+
+    .result-content {
+        display: none;
+        animation: slideIn 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    @keyframes slideIn {
+        from { opacity: 0; transform: translateX(30px); }
+        to { opacity: 1; transform: translateX(0); }
+    }
+
+    .result-label {
+        text-align: center;
+        font-size: 0.78rem;
+        font-weight: 600;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.2em;
+        margin-bottom: 15px;
+    }
+
+    .result-price {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 3.8rem;
+        font-weight: 800;
+        text-align: center;
+        background: var(--gradient-text);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+        line-height: 1;
+        margin-bottom: 10px;
+        filter: drop-shadow(0 0 30px rgba(139, 92, 246, 0.4));
+    }
+
+    .result-original {
+        text-align: center;
+        color: var(--muted);
+        font-size: 0.9rem;
+        margin-bottom: 35px;
+    }
+
+    .divider {
+        height: 1px;
+        background: var(--border);
+        margin: 30px 0;
+    }
+
+    .metrics {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 18px;
+        margin-bottom: 30px;
+    }
+
+    .metric {
+        background: var(--bg-secondary);
+        border-radius: 16px;
+        padding: 22px;
+        text-align: center;
+        border: 1px solid var(--border);
+        transition: all 0.3s;
+    }
+
+    .metric:hover {
+        transform: translateY(-3px);
+        border-color: var(--border-strong);
+    }
+
+    .metric-label {
+        font-size: 0.7rem;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.1em;
+        font-weight: 700;
+        margin-bottom: 8px;
+    }
+
+    .metric-value {
+        font-family: 'Space Grotesk', sans-serif;
+        font-size: 1.6rem;
+        font-weight: 700;
+        color: var(--text);
+    }
+
+    .metric-value.good { color: var(--success); }
+    .metric-value.warn { color: var(--warning); }
+    .metric-value.bad { color: var(--danger); }
+
+    .progress-section {
+        margin-top: 15px;
+    }
+
+    .progress-label {
+        display: flex;
+        justify-content: space-between;
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--muted);
+        margin-bottom: 10px;
+    }
+
+    .progress-bar {
+        height: 12px;
+        background: var(--bg-secondary);
+        border-radius: 10px;
+        overflow: hidden;
+        border: 1px solid var(--border);
+    }
+
+    .progress-fill {
+        height: 100%;
+        border-radius: 10px;
+        transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
+        background: var(--gradient);
+        box-shadow: var(--glow-primary);
+    }
+
+    @media (max-width: 968px) {
+        .predict-grid { grid-template-columns: 1fr; }
+        .result-card { position: static; }
+        .page-header h1 { font-size: 2rem; }
+    }
+
+    @media (max-width: 600px) {
+        .form-grid { grid-template-columns: 1fr; }
+        .form-group.full, .btn-submit { grid-column: span 1; }
+        .card, .result-card { padding: 28px; }
+        .result-price { font-size: 2.8rem; }
+    }
+</style>
+{% endblock %}
+
+{% block content %}
+
+<section class="page-header">
+    <div class="container">
+        <span class="eyebrow" data-aos="fade-up">🔮 Prediction Tool</span>
+        <h1 data-aos="fade-up" data-aos-delay="100">Get Your Phone's Value</h1>
+        <p data-aos="fade-up" data-aos-delay="200">Fill in the details below and get an instant resale price prediction.</p>
+    </div>
+</section>
+
+<section class="container">
+    <div class="predict-grid">
+        
+        <div class="card" data-aos="fade-right">
+            <div class="card-title">
+                <div class="card-title-icon"><i class="bi bi-phone"></i></div>
+                <h2>Phone Details</h2>
+            </div>
+
+            <form id="predictForm">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Brand</label>
+                        <select name="brand" required>
+                            <option value="Apple">🍎 Apple</option>
+                            <option value="Samsung">📱 Samsung</option>
+                            <option value="OnePlus">🔴 OnePlus</option>
+                            <option value="Google">🔵 Google</option>
+                            <option value="Xiaomi">🟠 Xiaomi</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Phone Age (months)</label>
+                        <input type="number" name="age" value="12" min="0" max="60" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>RAM</label>
+                        <select name="ram">
+                            <option value="4">4 GB</option>
+                            <option value="6">6 GB</option>
+                            <option value="8" selected>8 GB</option>
+                            <option value="12">12 GB</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Storage</label>
+                        <select name="storage">
+                            <option value="64">64 GB</option>
+                            <option value="128" selected>128 GB</option>
+                            <option value="256">256 GB</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Battery Health (%)</label>
+                        <input type="number" name="battery" value="85" min="50" max="100" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Condition</label>
+                        <select name="condition">
+                            <option value="Excellent">🌟 Excellent</option>
+                            <option value="Good" selected>👍 Good</option>
+                            <option value="Fair">😐 Fair</option>
+                            <option value="Poor">😞 Poor</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group full">
+                        <label>Original Purchase Price (₹)</label>
+                        <input type="number" name="original_price" value="50000" required>
+                    </div>
+
+                    <button type="submit" class="btn-submit" id="predictBtn">
+                        <i class="bi bi-magic"></i> Predict Resale Price
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <div class="result-card" data-aos="fade-left">
+            <div class="result-placeholder" id="placeholder">
+                <div class="ph-icon">📊</div>
+                <h3>No Prediction Yet</h3>
+                <p>Fill the form and click predict to see results</p>
+            </div>
+
+            <div class="result-content" id="resultContent">
+                <div class="result-label">Estimated Resale Price</div>
+                <div class="result-price" id="predictedPrice">₹0</div>
+                <div class="result-original">Original: ₹<span id="originalPriceDisplay">0</span></div>
+
+                <div class="divider"></div>
+
+                <div class="metrics">
+                    <div class="metric">
+                        <div class="metric-label">Depreciation</div>
+                        <div class="metric-value" id="depreciationValue">0%</div>
+                    </div>
+                    <div class="metric">
+                        <div class="metric-label">Value Retained</div>
+                        <div class="metric-value good" id="valueRetained">0%</div>
+                    </div>
+                </div>
+
+                <div class="progress-section">
+                    <div class="progress-label">
+                        <span>Value Retained</span>
+                        <span id="progressPercent">0%</span>
+                    </div>
+                    <div class="progress-bar">
+                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</section>
+
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.getElementById('predictForm').addEventListener('submit', async function(e) {
+    e.preventDefault();
+    
+    const btn = document.getElementById('predictBtn');
+    btn.disabled = true;
+    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Analyzing...';
+    
+    const formData = new FormData(this);
+    const data = {};
+    formData.forEach((value, key) => data[key] = value);
+    
+    try {
+        const response = await fetch('/api/predict', {
+            method: 'POST',
+            headers: {'Content-Type': 'application/json'},
+            body: JSON.stringify(data)
+        });
+        
+        const result = await response.json();
+        
+        if (result.success) {
+            document.getElementById('placeholder').style.display = 'none';
+            document.getElementById('resultContent').style.display = 'block';
+            
+            animateValue('predictedPrice', 0, result.predicted_price, '₹');
+            document.getElementById('originalPriceDisplay').textContent = 
+                result.original_price.toLocaleString('en-IN');
+            
+            const depEl = document.getElementById('depreciationValue');
+            depEl.textContent = result.depreciation + '%';
+            
+            const retained = result.value_retained;
+            document.getElementById('valueRetained').textContent = retained + '%';
+            document.getElementById('progressPercent').textContent = retained + '%';
+            
+            const fill = document.getElementById('progressFill');
+            fill.style.width = retained + '%';
+            
+            if (result.depreciation < 20) {
+                depEl.className = 'metric-value good';
+            } else if (result.depreciation < 40) {
+                depEl.className = 'metric-value warn';
+            } else {
+                depEl.className = 'metric-value bad';
+            }
+            
+            // 🎉 Confetti celebration
+            celebrate();
+        } else {
+            alert('❌ Error: ' + result.error);
+        }
+    } catch (error) {
+        alert('❌ Error: ' + error.message);
+    } finally {
+        btn.disabled = false;
+        btn.innerHTML = '<i class="bi bi-magic"></i> Predict Resale Price';
+    }
+});
+
+function animateValue(id, start, end, prefix) {
+    const el = document.getElementById(id);
+    const duration = 1200;
+    const startTime = performance.now();
+    
+    function update(currentTime) {
+        const elapsed = currentTime - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        const eased = 1 - Math.pow(1 - progress, 3);
+        const current = start + (end - start) * eased;
+        el.textContent = prefix + Math.round(current).toLocaleString('en-IN');
+        
+        if (progress < 1) {
+            requestAnimationFrame(update);
+        }
+    }
+    requestAnimationFrame(update);
+}
+</script>
+{% endblock %}
