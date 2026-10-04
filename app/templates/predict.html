@@ -1,97 +1,117 @@
 {% extends "base.html" %}
 
-{% block title %}Predict · PhoneValue AI{% endblock %}
+{% block title %}Smartphone Resale Price Valuation · PhoneValue AI{% endblock %}
 
 {% block extra_css %}
 <style>
-    .page-header {
-        padding: 80px 0 50px;
+    .predict-header {
+        padding: 50px 0 35px;
         text-align: center;
     }
 
-    .page-header .eyebrow {
-        color: var(--primary-light);
-        font-size: 0.85rem;
-        font-weight: 600;
-        letter-spacing: 0.2em;
-        text-transform: uppercase;
-        margin-bottom: 15px;
-        display: block;
+    .predict-header h1 {
+        font-size: 2.6rem;
+        margin-bottom: 12px;
     }
 
-    .page-header h1 {
-        font-size: 3rem;
-        color: var(--text);
-        margin-bottom: 18px;
-    }
-
-    .page-header p {
+    .predict-header p {
         color: var(--text-secondary);
-        font-size: 1.1rem;
-        max-width: 600px;
+        font-size: 1.05rem;
+        max-width: 620px;
         margin: 0 auto;
     }
 
-    .predict-grid {
-        display: grid;
-        grid-template-columns: 1.2fr 0.8fr;
-        gap: 35px;
-        padding: 40px 0 100px;
-    }
-
-    .card {
-        background: var(--card);
-        backdrop-filter: blur(20px);
-        border: 1px solid var(--border);
-        border-radius: 28px;
-        padding: 45px;
-        transition: all 0.4s;
-    }
-
-    .card:hover {
-        border-color: var(--border-strong);
-        box-shadow: var(--shadow-lg);
-    }
-
-    .card-title {
-        display: flex;
-        align-items: center;
-        gap: 15px;
+    /* Preset Quick Buttons */
+    .presets-bar {
         margin-bottom: 35px;
-        padding-bottom: 25px;
-        border-bottom: 1px solid var(--border);
-    }
-
-    .card-title-icon {
-        width: 50px;
-        height: 50px;
-        background: var(--gradient);
-        border-radius: 15px;
+        padding: 16px 20px;
+        background: var(--bg-surface);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-lg);
         display: flex;
         align-items: center;
-        justify-content: center;
-        color: white;
-        font-size: 1.3rem;
-        box-shadow: var(--glow-primary);
+        gap: 12px;
+        flex-wrap: wrap;
+        box-shadow: var(--card-shadow);
+        transition: transform 0.2s ease;
     }
 
-    .card-title h2 {
+    .presets-label {
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: var(--text-muted);
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .preset-chip {
+        background: var(--bg-subtle);
+        border: 1px solid var(--border-subtle);
+        color: var(--text-secondary);
+        font-size: 0.82rem;
+        font-weight: 600;
+        padding: 7px 15px;
+        border-radius: 20px;
+        cursor: pointer;
+        transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .preset-chip:hover {
+        background: var(--primary-subtle);
+        border-color: var(--primary-light);
+        color: var(--primary-light);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 10px rgba(37, 99, 235, 0.15);
+    }
+
+    .preset-chip:active {
+        transform: scale(0.96);
+    }
+
+    /* Main Valuation Grid */
+    .valuation-grid {
+        display: grid;
+        grid-template-columns: 1.15fr 0.85fr;
+        gap: 32px;
+        padding-bottom: 90px;
+        align-items: start;
+    }
+
+    .form-card {
+        padding: 36px;
+    }
+
+    .card-heading {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 28px;
+        padding-bottom: 18px;
+        border-bottom: 1px solid var(--border-subtle);
+    }
+
+    .card-heading i {
         font-size: 1.4rem;
-        color: var(--text);
-        font-family: 'Space Grotesk', sans-serif;
+        color: var(--primary-light);
+    }
+
+    .card-heading h3 {
+        font-size: 1.25rem;
     }
 
     .form-grid {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 22px;
+        gap: 20px;
     }
 
     .form-group {
         display: flex;
         flex-direction: column;
-        gap: 10px;
-        position: relative;
+        gap: 8px;
     }
 
     .form-group.full {
@@ -102,298 +122,343 @@
         font-size: 0.8rem;
         font-weight: 600;
         color: var(--text-secondary);
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
+        display: flex;
+        justify-content: space-between;
     }
 
-    .form-group select,
-    .form-group input {
-        padding: 15px 18px;
-        border: 1.5px solid var(--border);
-        border-radius: 14px;
+    .form-group label span {
+        font-size: 0.75rem;
+        color: var(--text-muted);
+        font-weight: 400;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 12px 16px;
+        background: var(--bg-subtle);
+        border: 1px solid var(--border-strong);
+        border-radius: var(--radius-md);
+        color: var(--text-primary);
         font-size: 0.95rem;
-        font-family: 'Inter', sans-serif;
-        background: var(--bg-secondary);
-        color: var(--text);
-        transition: all 0.3s;
+        font-family: inherit;
         outline: none;
+        transition: border-color 0.2s, box-shadow 0.2s, background-color 0.2s;
     }
 
-    .form-group select:focus,
-    .form-group input:focus {
+    .form-control:focus {
         border-color: var(--primary);
-        background: var(--card-solid);
-        box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.15), var(--glow-primary);
-        transform: translateY(-2px);
+        box-shadow: 0 0 0 3px var(--primary-subtle);
+        background: var(--bg-surface);
     }
 
-    .form-group select:hover,
-    .form-group input:hover {
-        border-color: var(--border-strong);
+    select.form-control {
+        cursor: pointer;
     }
 
-    .btn-submit {
+    .btn-submit-calc {
         grid-column: span 2;
-        padding: 18px;
-        background: var(--gradient);
-        color: white;
-        border: none;
-        border-radius: 14px;
+        padding: 15px;
         font-size: 1rem;
         font-weight: 700;
-        font-family: 'Inter', sans-serif;
-        cursor: pointer;
-        transition: all 0.3s;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 10px;
-        margin-top: 15px;
-        box-shadow: var(--glow-primary);
-        position: relative;
-        overflow: hidden;
+        margin-top: 10px;
     }
 
-    .btn-submit::before {
-        content: '';
-        position: absolute;
-        top: 0;
-        left: -100%;
-        width: 100%;
-        height: 100%;
-        background: linear-gradient(90deg, transparent, rgba(255,255,255,0.3), transparent);
-        transition: left 0.6s;
-    }
-
-    .btn-submit:hover::before {
-        left: 100%;
-    }
-
-    .btn-submit:hover {
-        transform: translateY(-3px);
-        box-shadow: 0 20px 50px rgba(139, 92, 246, 0.5);
-    }
-
-    .btn-submit:disabled {
-        opacity: 0.7;
-        cursor: not-allowed;
-        transform: none;
-    }
-
-    .result-card {
-        background: var(--card);
-        backdrop-filter: blur(20px);
-        border: 1px solid var(--border);
-        border-radius: 28px;
-        padding: 45px;
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        min-height: 550px;
+    /* Result Report Card */
+    .report-card {
+        padding: 36px;
         position: sticky;
-        top: 100px;
-        transition: all 0.4s;
+        top: 96px;
     }
 
-    .result-card:hover {
+    .report-empty {
+        text-align: center;
+        padding: 50px 20px;
+        color: var(--text-muted);
+    }
+
+    .empty-icon {
+        font-size: 3.5rem;
+        color: var(--border-strong);
+        margin-bottom: 16px;
+        animation: pulseIcon 3s ease-in-out infinite;
+    }
+
+    @keyframes pulseIcon {
+        0%, 100% { transform: scale(1); opacity: 0.7; }
+        50% { transform: scale(1.06); opacity: 1; }
+    }
+
+    .report-empty h4 {
+        font-size: 1.15rem;
+        color: var(--text-primary);
+        margin-bottom: 8px;
+    }
+
+    .report-empty p {
+        font-size: 0.88rem;
+        line-height: 1.6;
+    }
+
+    .report-content {
+        display: none;
+    }
+
+    /* Staggered Cascade In */
+    .cascade-item {
+        animation: cascadeUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+    }
+
+    .cascade-delay-1 { animation-delay: 0.05s; }
+    .cascade-delay-2 { animation-delay: 0.15s; }
+    .cascade-delay-3 { animation-delay: 0.25s; }
+    .cascade-delay-4 { animation-delay: 0.35s; }
+
+    @keyframes cascadeUp {
+        from { opacity: 0; transform: translateY(16px); }
+        to { opacity: 1; transform: translateY(0); }
+    }
+
+    .valuation-hero {
+        text-align: center;
+        background: var(--bg-subtle);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-lg);
+        padding: 28px 20px;
+        margin-bottom: 24px;
+        transition: border-color 0.3s;
+    }
+
+    .valuation-hero:hover {
+        border-color: var(--primary);
+    }
+
+    .valuation-label {
+        font-size: 0.78rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        color: var(--text-muted);
+        margin-bottom: 8px;
+    }
+
+    .valuation-amount {
+        font-size: 3.2rem;
+        font-weight: 800;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        color: var(--text-primary);
+        line-height: 1.1;
+        letter-spacing: -0.03em;
+    }
+
+    .valuation-orig {
+        font-size: 0.88rem;
+        color: var(--text-secondary);
+        margin-top: 8px;
+    }
+
+    /* Corridor Box */
+    .corridor-box {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background: var(--bg-subtle);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md);
+        padding: 12px 16px;
+        font-size: 0.85rem;
+        margin-bottom: 24px;
+        transition: border-color 0.2s;
+    }
+
+    .corridor-box:hover {
         border-color: var(--border-strong);
     }
 
-    .result-placeholder {
-        text-align: center;
-        color: var(--muted);
-    }
-
-    .result-placeholder .ph-icon {
-        font-size: 4.5rem;
-        margin-bottom: 25px;
-        opacity: 0.4;
-        animation: pulse 3s ease-in-out infinite;
-    }
-
-    .result-placeholder h3 {
-        font-size: 1.3rem;
-        color: var(--text);
-        margin-bottom: 10px;
-        font-family: 'Space Grotesk', sans-serif;
-    }
-
-    .result-placeholder p {
-        font-size: 0.9rem;
-    }
-
-    .result-content {
-        display: none;
-        animation: slideIn 0.7s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-
-    @keyframes slideIn {
-        from { opacity: 0; transform: translateX(30px); }
-        to { opacity: 1; transform: translateX(0); }
-    }
-
-    .result-label {
-        text-align: center;
-        font-size: 0.78rem;
+    .corridor-title {
+        color: var(--text-muted);
         font-weight: 600;
-        color: var(--muted);
-        text-transform: uppercase;
-        letter-spacing: 0.2em;
-        margin-bottom: 15px;
     }
 
-    .result-price {
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 3.8rem;
-        font-weight: 800;
-        text-align: center;
-        background: var(--gradient-text);
-        -webkit-background-clip: text;
-        -webkit-text-fill-color: transparent;
-        background-clip: text;
-        line-height: 1;
-        margin-bottom: 10px;
-        filter: drop-shadow(0 0 30px rgba(139, 92, 246, 0.4));
+    .corridor-range {
+        font-weight: 700;
+        color: var(--primary-light);
+        font-family: 'Plus Jakarta Sans', sans-serif;
     }
 
-    .result-original {
-        text-align: center;
-        color: var(--muted);
-        font-size: 0.9rem;
-        margin-bottom: 35px;
-    }
-
-    .divider {
-        height: 1px;
-        background: var(--border);
-        margin: 30px 0;
-    }
-
-    .metrics {
+    /* Metrics Grid */
+    .report-metrics {
         display: grid;
         grid-template-columns: 1fr 1fr;
-        gap: 18px;
-        margin-bottom: 30px;
+        gap: 14px;
+        margin-bottom: 24px;
     }
 
-    .metric {
-        background: var(--bg-secondary);
-        border-radius: 16px;
-        padding: 22px;
-        text-align: center;
-        border: 1px solid var(--border);
-        transition: all 0.3s;
+    .metric-box {
+        background: var(--bg-subtle);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-md);
+        padding: 16px;
+        transition: transform 0.2s, border-color 0.2s;
     }
 
-    .metric:hover {
-        transform: translateY(-3px);
+    .metric-box:hover {
+        transform: translateY(-2px);
         border-color: var(--border-strong);
     }
 
     .metric-label {
-        font-size: 0.7rem;
-        color: var(--muted);
+        font-size: 0.72rem;
+        font-weight: 700;
         text-transform: uppercase;
-        letter-spacing: 0.1em;
-        font-weight: 700;
-        margin-bottom: 8px;
+        color: var(--text-muted);
+        letter-spacing: 0.05em;
+        margin-bottom: 6px;
     }
 
-    .metric-value {
-        font-family: 'Space Grotesk', sans-serif;
-        font-size: 1.6rem;
-        font-weight: 700;
-        color: var(--text);
+    .metric-val {
+        font-size: 1.4rem;
+        font-weight: 800;
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        color: var(--text-primary);
     }
 
-    .metric-value.good { color: var(--success); }
-    .metric-value.warn { color: var(--warning); }
-    .metric-value.bad { color: var(--danger); }
+    .metric-val.good { color: var(--success); }
+    .metric-val.warn { color: var(--warning); }
+    .metric-val.bad { color: var(--danger); }
 
-    .progress-section {
+    /* Retention Meter */
+    .retention-section {
         margin-top: 15px;
     }
 
-    .progress-label {
+    .meter-label {
         display: flex;
         justify-content: space-between;
-        font-size: 0.8rem;
+        font-size: 0.82rem;
         font-weight: 600;
-        color: var(--muted);
-        margin-bottom: 10px;
+        color: var(--text-secondary);
+        margin-bottom: 8px;
     }
 
-    .progress-bar {
-        height: 12px;
-        background: var(--bg-secondary);
+    .meter-bar {
+        height: 10px;
+        background: var(--bg-subtle);
         border-radius: 10px;
         overflow: hidden;
-        border: 1px solid var(--border);
+        border: 1px solid var(--border-subtle);
     }
 
-    .progress-fill {
+    .meter-fill {
         height: 100%;
+        background: linear-gradient(90deg, var(--primary) 0%, var(--primary-light) 100%);
         border-radius: 10px;
-        transition: width 1.5s cubic-bezier(0.4, 0, 0.2, 1);
-        background: var(--gradient);
-        box-shadow: var(--glow-primary);
+        width: 0%;
+        transition: width 1.2s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    @media (max-width: 968px) {
-        .predict-grid { grid-template-columns: 1fr; }
-        .result-card { position: static; }
-        .page-header h1 { font-size: 2rem; }
+    .advice-badge {
+        margin-top: 20px;
+        padding: 12px 16px;
+        border-radius: var(--radius-md);
+        background: var(--primary-subtle);
+        border: 1px solid var(--border-subtle);
+        font-size: 0.85rem;
+        color: var(--text-secondary);
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: transform 0.2s;
+    }
+
+    .advice-badge:hover {
+        transform: translateY(-1px);
+    }
+
+    .advice-badge i {
+        font-size: 1.1rem;
+        color: var(--primary-light);
+    }
+
+    /* Responsive */
+    @media (max-width: 992px) {
+        .valuation-grid { grid-template-columns: 1fr; }
+        .report-card { position: static; }
     }
 
     @media (max-width: 600px) {
         .form-grid { grid-template-columns: 1fr; }
-        .form-group.full, .btn-submit { grid-column: span 1; }
-        .card, .result-card { padding: 28px; }
-        .result-price { font-size: 2.8rem; }
+        .form-group.full, .btn-submit-calc { grid-column: span 1; }
+        .form-card, .report-card { padding: 24px; }
+        .valuation-amount { font-size: 2.5rem; }
     }
 </style>
 {% endblock %}
 
 {% block content %}
+<div class="container">
+    <section class="predict-header" data-aos="fade-down">
+        <div class="section-tag">
+            <i class="bi bi-lightning-charge-fill"></i> Random Forest Valuation Engine
+        </div>
+        <h1>Smartphone Fair Market Valuation</h1>
+        <p>Supply current physical attributes to compute accurate secondary market price benchmarks, value retention percentages, and depreciation velocity.</p>
+    </section>
 
-<section class="page-header">
-    <div class="container">
-        <span class="eyebrow" data-aos="fade-up">🔮 Prediction Tool</span>
-        <h1 data-aos="fade-up" data-aos-delay="100">Get Your Phone's Value</h1>
-        <p data-aos="fade-up" data-aos-delay="200">Fill in the details below and get an instant resale price prediction.</p>
+    <!-- Quick Preset Chips -->
+    <div class="presets-bar" data-aos="fade-up" data-aos-delay="100">
+        <div class="presets-label">
+            <i class="bi bi-bookmark-star"></i> Quick Benchmarks:
+        </div>
+        <button type="button" class="preset-chip" onclick="loadPreset('Apple', 12, 8, 128, 88, 'Excellent', 65000)">
+            Apple iPhone 13 (128GB, Exc)
+        </button>
+        <button type="button" class="preset-chip" onclick="loadPreset('Samsung', 18, 8, 256, 84, 'Good', 72000)">
+            Samsung Galaxy S22 (256GB, Good)
+        </button>
+        <button type="button" class="preset-chip" onclick="loadPreset('Google', 10, 8, 128, 92, 'Excellent', 59999)">
+            Google Pixel 7 (128GB, Exc)
+        </button>
+        <button type="button" class="preset-chip" onclick="loadPreset('OnePlus', 24, 8, 128, 80, 'Fair', 38999)">
+            OnePlus 10T (128GB, Fair)
+        </button>
+        <button type="button" class="preset-chip" onclick="loadPreset('Xiaomi', 6, 6, 128, 95, 'Excellent', 24999)">
+            Xiaomi Redmi Note (128GB, Exc)
+        </button>
     </div>
-</section>
 
-<section class="container">
-    <div class="predict-grid">
-        
-        <div class="card" data-aos="fade-right">
-            <div class="card-title">
-                <div class="card-title-icon"><i class="bi bi-phone"></i></div>
-                <h2>Phone Details</h2>
+    <!-- Main Valuation Grid -->
+    <div class="valuation-grid">
+        <!-- Input Form -->
+        <div class="card form-card" data-aos="fade-right" data-aos-delay="200">
+            <div class="card-heading">
+                <i class="bi bi-sliders"></i>
+                <h3>Hardware & Purchase Details</h3>
             </div>
 
-            <form id="predictForm">
+            <form id="valuationForm">
                 <div class="form-grid">
                     <div class="form-group">
-                        <label>Brand</label>
-                        <select name="brand" required>
-                            <option value="Apple">🍎 Apple</option>
-                            <option value="Samsung">📱 Samsung</option>
-                            <option value="OnePlus">🔴 OnePlus</option>
-                            <option value="Google">🔵 Google</option>
-                            <option value="Xiaomi">🟠 Xiaomi</option>
+                        <label for="brandSelect">Manufacturer Brand</label>
+                        <select name="brand" id="brandSelect" class="form-control" required>
+                            <option value="Apple">Apple</option>
+                            <option value="Samsung">Samsung</option>
+                            <option value="OnePlus">OnePlus</option>
+                            <option value="Google">Google</option>
+                            <option value="Xiaomi">Xiaomi</option>
                         </select>
                     </div>
 
                     <div class="form-group">
-                        <label>Phone Age (months)</label>
-                        <input type="number" name="age" value="12" min="0" max="60" required>
+                        <label for="ageInput">
+                            Device Age (Months)
+                            <span>12 mo = 1 yr</span>
+                        </label>
+                        <input type="number" name="age" id="ageInput" class="form-control" value="12" min="0" max="60" required>
                     </div>
 
                     <div class="form-group">
-                        <label>RAM</label>
-                        <select name="ram">
+                        <label for="ramSelect">RAM Memory</label>
+                        <select name="ram" id="ramSelect" class="form-control" required>
                             <option value="4">4 GB</option>
                             <option value="6">6 GB</option>
                             <option value="8" selected>8 GB</option>
@@ -402,8 +467,8 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Storage</label>
-                        <select name="storage">
+                        <label for="storageSelect">Storage Capacity</label>
+                        <select name="storage" id="storageSelect" class="form-control" required>
                             <option value="64">64 GB</option>
                             <option value="128" selected>128 GB</option>
                             <option value="256">256 GB</option>
@@ -411,152 +476,216 @@
                     </div>
 
                     <div class="form-group">
-                        <label>Battery Health (%)</label>
-                        <input type="number" name="battery" value="85" min="50" max="100" required>
+                        <label for="batteryInput">
+                            Battery Maximum Capacity (%)
+                            <span id="batteryBadge">85%</span>
+                        </label>
+                        <input type="number" name="battery" id="batteryInput" class="form-control" value="85" min="50" max="100" required>
                     </div>
 
                     <div class="form-group">
-                        <label>Condition</label>
-                        <select name="condition">
-                            <option value="Excellent">🌟 Excellent</option>
-                            <option value="Good" selected>👍 Good</option>
-                            <option value="Fair">😐 Fair</option>
-                            <option value="Poor">😞 Poor</option>
+                        <label for="conditionSelect">Physical Cosmetic State</label>
+                        <select name="condition" id="conditionSelect" class="form-control" required>
+                            <option value="Excellent">Excellent (Like New, No Scratches)</option>
+                            <option value="Good" selected>Good (Minor Normal Wear)</option>
+                            <option value="Fair">Fair (Noticeable Scuffs/Micro-dents)</option>
+                            <option value="Poor">Poor (Heavy Scuffs, Worn Body)</option>
                         </select>
                     </div>
 
                     <div class="form-group full">
-                        <label>Original Purchase Price (₹)</label>
-                        <input type="number" name="original_price" value="50000" required>
+                        <label for="priceInput">
+                            Original MSRP / Purchase Price (₹)
+                            <span>Indian Rupee</span>
+                        </label>
+                        <input type="number" name="original_price" id="priceInput" class="form-control" value="50000" min="5000" max="250000" step="500" required>
                     </div>
 
-                    <button type="submit" class="btn-submit" id="predictBtn">
-                        <i class="bi bi-magic"></i> Predict Resale Price
+                    <button type="submit" class="btn-solid btn-submit-calc" id="calcBtn">
+                        <i class="bi bi-cpu"></i> Compute Fair Valuation
                     </button>
                 </div>
             </form>
         </div>
 
-        <div class="result-card" data-aos="fade-left">
-            <div class="result-placeholder" id="placeholder">
-                <div class="ph-icon">📊</div>
-                <h3>No Prediction Yet</h3>
-                <p>Fill the form and click predict to see results</p>
+        <!-- Result Card -->
+        <div class="card report-card" data-aos="fade-left" data-aos-delay="200">
+            <!-- Empty Placeholder -->
+            <div class="report-empty" id="reportPlaceholder">
+                <i class="bi bi-clipboard2-data empty-icon"></i>
+                <h4>Awaiting Specifications</h4>
+                <p>Adjust the attributes on the left or select a flagship preset above, then execute valuation to inspect fair market pricing metrics.</p>
             </div>
 
-            <div class="result-content" id="resultContent">
-                <div class="result-label">Estimated Resale Price</div>
-                <div class="result-price" id="predictedPrice">₹0</div>
-                <div class="result-original">Original: ₹<span id="originalPriceDisplay">0</span></div>
-
-                <div class="divider"></div>
-
-                <div class="metrics">
-                    <div class="metric">
-                        <div class="metric-label">Depreciation</div>
-                        <div class="metric-value" id="depreciationValue">0%</div>
-                    </div>
-                    <div class="metric">
-                        <div class="metric-label">Value Retained</div>
-                        <div class="metric-value good" id="valueRetained">0%</div>
+            <!-- Active Valuation Content with Cascade Stagger -->
+            <div class="report-content" id="reportContent">
+                <div class="valuation-hero cascade-item cascade-delay-1">
+                    <div class="valuation-label">Estimated Fair Resale Value</div>
+                    <div class="valuation-amount" id="valPrice">₹0</div>
+                    <div class="valuation-orig">
+                        Original MSRP: <strike id="valOriginal">₹0</strike>
                     </div>
                 </div>
 
-                <div class="progress-section">
-                    <div class="progress-label">
-                        <span>Value Retained</span>
-                        <span id="progressPercent">0%</span>
+                <div class="corridor-box cascade-item cascade-delay-2">
+                    <div class="corridor-title">
+                        <i class="bi bi-shield-check"></i> Fair Market Corridor
                     </div>
-                    <div class="progress-bar">
-                        <div class="progress-fill" id="progressFill" style="width: 0%"></div>
+                    <div class="corridor-range" id="valCorridor">₹0 – ₹0</div>
+                </div>
+
+                <div class="report-metrics cascade-item cascade-delay-3">
+                    <div class="metric-box">
+                        <div class="metric-label">Retained Equity</div>
+                        <div class="metric-val good" id="valRetained">0.0%</div>
                     </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Depreciation</div>
+                        <div class="metric-val" id="valDepreciation">0.0%</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Monthly Rate</div>
+                        <div class="metric-val" id="valMonthly">₹0 / mo</div>
+                    </div>
+                    <div class="metric-box">
+                        <div class="metric-label">Market Status</div>
+                        <div class="metric-val" style="font-size: 1rem;" id="valStatus">Liquid</div>
+                    </div>
+                </div>
+
+                <div class="retention-section cascade-item cascade-delay-4">
+                    <div class="meter-label">
+                        <span>Value Retention vs MSRP</span>
+                        <span id="meterText">0.0%</span>
+                    </div>
+                    <div class="meter-bar">
+                        <div class="meter-fill" id="meterFill"></div>
+                    </div>
+                </div>
+
+                <div class="advice-badge cascade-item cascade-delay-4" id="adviceBadge">
+                    <i class="bi bi-info-circle-fill"></i>
+                    <span id="adviceText">Model inference complete.</span>
                 </div>
             </div>
         </div>
-
     </div>
-</section>
-
+</div>
 {% endblock %}
 
 {% block extra_js %}
 <script>
-document.getElementById('predictForm').addEventListener('submit', async function(e) {
+// Preset Loader
+function loadPreset(brand, age, ram, storage, battery, condition, originalPrice) {
+    document.getElementById('brandSelect').value = brand;
+    document.getElementById('ageInput').value = age;
+    document.getElementById('ramSelect').value = ram;
+    document.getElementById('storageSelect').value = storage;
+    document.getElementById('batteryInput').value = battery;
+    document.getElementById('batteryBadge').textContent = battery + '%';
+    document.getElementById('conditionSelect').value = condition;
+    document.getElementById('priceInput').value = originalPrice;
+    
+    showToast(`Loaded benchmark preset: ${brand} (${storage}GB)`, 'info');
+    
+    // Trigger submission automatically for instant feedback
+    document.getElementById('valuationForm').dispatchEvent(new Event('submit'));
+}
+
+// Battery label feedback
+document.getElementById('batteryInput').addEventListener('input', function() {
+    document.getElementById('batteryBadge').textContent = this.value + '%';
+});
+
+// Form Submission Handler with Counter Animation
+document.getElementById('valuationForm').addEventListener('submit', async function(e) {
     e.preventDefault();
     
-    const btn = document.getElementById('predictBtn');
+    const btn = document.getElementById('calcBtn');
     btn.disabled = true;
-    btn.innerHTML = '<i class="bi bi-hourglass-split"></i> Analyzing...';
+    btn.innerHTML = '<i class="bi bi-arrow-repeat spin"></i> Calculating...';
     
     const formData = new FormData(this);
-    const data = {};
-    formData.forEach((value, key) => data[key] = value);
+    const payload = {};
+    formData.forEach((val, key) => payload[key] = val);
     
     try {
         const response = await fetch('/api/predict', {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
-            body: JSON.stringify(data)
+            body: JSON.stringify(payload)
         });
         
         const result = await response.json();
         
         if (result.success) {
-            document.getElementById('placeholder').style.display = 'none';
-            document.getElementById('resultContent').style.display = 'block';
+            document.getElementById('reportPlaceholder').style.display = 'none';
+            const content = document.getElementById('reportContent');
+            content.style.display = 'block';
             
-            animateValue('predictedPrice', 0, result.predicted_price, '₹');
-            document.getElementById('originalPriceDisplay').textContent = 
-                result.original_price.toLocaleString('en-IN');
+            // Re-trigger staggered animation
+            content.querySelectorAll('.cascade-item').forEach(el => {
+                el.style.animation = 'none';
+                el.offsetHeight; /* trigger reflow */
+                el.style.animation = null;
+            });
             
-            const depEl = document.getElementById('depreciationValue');
+            // Animated price counter
+            animateCounter(document.getElementById('valPrice'), 0, result.predicted_price, 900, '₹');
+            
+            const formattedOrig = '₹' + Math.round(result.original_price).toLocaleString('en-IN');
+            const lowRange = '₹' + Math.round(result.price_range_low).toLocaleString('en-IN');
+            const highRange = '₹' + Math.round(result.price_range_high).toLocaleString('en-IN');
+            
+            document.getElementById('valOriginal').textContent = formattedOrig;
+            document.getElementById('valCorridor').textContent = `${lowRange} – ${highRange}`;
+            
+            document.getElementById('valRetained').textContent = result.value_retained + '%';
+            
+            const depEl = document.getElementById('valDepreciation');
             depEl.textContent = result.depreciation + '%';
-            
-            const retained = result.value_retained;
-            document.getElementById('valueRetained').textContent = retained + '%';
-            document.getElementById('progressPercent').textContent = retained + '%';
-            
-            const fill = document.getElementById('progressFill');
-            fill.style.width = retained + '%';
-            
-            if (result.depreciation < 20) {
-                depEl.className = 'metric-value good';
-            } else if (result.depreciation < 40) {
-                depEl.className = 'metric-value warn';
+            if (result.depreciation < 25) {
+                depEl.className = 'metric-val good';
+            } else if (result.depreciation < 45) {
+                depEl.className = 'metric-val warn';
             } else {
-                depEl.className = 'metric-value bad';
+                depEl.className = 'metric-val bad';
             }
             
-            // 🎉 Confetti celebration
-            celebrate();
+            document.getElementById('valMonthly').textContent = '₹' + Math.round(result.monthly_depreciation).toLocaleString('en-IN') + ' / mo';
+            
+            // Animated Progress Bar Fill
+            document.getElementById('meterText').textContent = result.value_retained + '%';
+            setTimeout(() => {
+                document.getElementById('meterFill').style.width = Math.min(100, Math.max(0, result.value_retained)) + '%';
+            }, 50);
+            
+            // Status and Advice
+            let status = 'Standard';
+            let advice = '';
+            if (result.value_retained > 65) {
+                status = 'High Equity';
+                advice = 'Prime resale condition. The device has retained optimal market value.';
+            } else if (result.value_retained > 45) {
+                status = 'Fair Value';
+                advice = 'Healthy secondary market equilibrium. Recommended trade-in window.';
+            } else {
+                status = 'Deep Discount';
+                advice = 'Heavily depreciated device. Best priced for budget quick-sale.';
+            }
+            document.getElementById('valStatus').textContent = status;
+            document.getElementById('adviceText').textContent = advice;
+            
+            showToast('Valuation generated successfully', 'success');
         } else {
-            alert('❌ Error: ' + result.error);
+            showToast(result.error || 'Prediction failed', 'error');
         }
-    } catch (error) {
-        alert('❌ Error: ' + error.message);
+    } catch (err) {
+        showToast('Network error: ' + err.message, 'error');
     } finally {
         btn.disabled = false;
-        btn.innerHTML = '<i class="bi bi-magic"></i> Predict Resale Price';
+        btn.innerHTML = '<i class="bi bi-cpu"></i> Compute Fair Valuation';
     }
 });
-
-function animateValue(id, start, end, prefix) {
-    const el = document.getElementById(id);
-    const duration = 1200;
-    const startTime = performance.now();
-    
-    function update(currentTime) {
-        const elapsed = currentTime - startTime;
-        const progress = Math.min(elapsed / duration, 1);
-        const eased = 1 - Math.pow(1 - progress, 3);
-        const current = start + (end - start) * eased;
-        el.textContent = prefix + Math.round(current).toLocaleString('en-IN');
-        
-        if (progress < 1) {
-            requestAnimationFrame(update);
-        }
-    }
-    requestAnimationFrame(update);
-}
 </script>
 {% endblock %}
