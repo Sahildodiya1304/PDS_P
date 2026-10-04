@@ -443,9 +443,11 @@ def get_analytics():
 
 
 if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 5000))
+    host = '0.0.0.0' if os.environ.get('PORT') else '127.0.0.1'
     print("\n" + "="*55)
     print("  🚀 PhoneValue AI Server Running Successfully!")
-    print("  👉 Open in your browser: http://127.0.0.1:5000")
-    print("  👉 Or alternatively:     http://localhost:5000")
+    print(f"  👉 Open in your browser: http://127.0.0.1:{port}")
+    print(f"  👉 Or alternatively:     http://localhost:{port}")
     print("="*55 + "\n")
-    app.run(debug=True, host='127.0.0.1', port=5000)
+    app.run(debug=True, host=host, port=port)
