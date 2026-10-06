@@ -274,6 +274,66 @@ DEFAULT_CHARTS_CACHE = generate_all_charts(df)
 print(f"[OK] Cached {len(DEFAULT_CHARTS_CACHE)} default charts successfully!")
 
 
+# Catalog of popular phone models by brand with baseline market specs
+PHONE_MODELS_BY_BRAND = {
+    'Apple': [
+        {'name': 'iPhone 15 Pro Max', 'ram': 8, 'storage': 256, 'age': 8, 'price': 159900},
+        {'name': 'iPhone 15 Pro', 'ram': 8, 'storage': 128, 'age': 8, 'price': 134900},
+        {'name': 'iPhone 15', 'ram': 6, 'storage': 128, 'age': 8, 'price': 79900},
+        {'name': 'iPhone 14 Pro Max', 'ram': 6, 'storage': 128, 'age': 20, 'price': 139900},
+        {'name': 'iPhone 14', 'ram': 6, 'storage': 128, 'age': 20, 'price': 69900},
+        {'name': 'iPhone 13 Pro', 'ram': 6, 'storage': 128, 'age': 32, 'price': 119900},
+        {'name': 'iPhone 13', 'ram': 4, 'storage': 128, 'age': 32, 'price': 59900},
+        {'name': 'iPhone 12', 'ram': 4, 'storage': 64, 'age': 44, 'price': 49900},
+        {'name': 'iPhone 11', 'ram': 4, 'storage': 64, 'age': 56, 'price': 41900},
+        {'name': 'iPhone SE (3rd Gen)', 'ram': 4, 'storage': 64, 'age': 28, 'price': 43900}
+    ],
+    'Samsung': [
+        {'name': 'Galaxy S23 Ultra', 'ram': 12, 'storage': 256, 'age': 14, 'price': 124999},
+        {'name': 'Galaxy S23', 'ram': 8, 'storage': 128, 'age': 14, 'price': 74999},
+        {'name': 'Galaxy S22 Ultra', 'ram': 12, 'storage': 256, 'age': 26, 'price': 109999},
+        {'name': 'Galaxy S22', 'ram': 8, 'storage': 128, 'age': 26, 'price': 62999},
+        {'name': 'Galaxy S21 FE 5G', 'ram': 8, 'storage': 128, 'age': 28, 'price': 49999},
+        {'name': 'Galaxy Z Fold 4', 'ram': 12, 'storage': 256, 'age': 22, 'price': 154999},
+        {'name': 'Galaxy Z Flip 4', 'ram': 8, 'storage': 128, 'age': 22, 'price': 89999},
+        {'name': 'Galaxy A54 5G', 'ram': 8, 'storage': 128, 'age': 14, 'price': 38999},
+        {'name': 'Galaxy A34 5G', 'ram': 8, 'storage': 128, 'age': 14, 'price': 30999},
+        {'name': 'Galaxy Note 20 Ultra', 'ram': 12, 'storage': 256, 'age': 46, 'price': 104999}
+    ],
+    'OnePlus': [
+        {'name': 'OnePlus 11 5G', 'ram': 12, 'storage': 256, 'age': 15, 'price': 61999},
+        {'name': 'OnePlus 11R', 'ram': 8, 'storage': 128, 'age': 14, 'price': 39999},
+        {'name': 'OnePlus 10 Pro', 'ram': 8, 'storage': 128, 'age': 26, 'price': 66999},
+        {'name': 'OnePlus 10T', 'ram': 8, 'storage': 128, 'age': 22, 'price': 49999},
+        {'name': 'OnePlus 9 Pro', 'ram': 8, 'storage': 128, 'age': 38, 'price': 64999},
+        {'name': 'OnePlus 9R', 'ram': 8, 'storage': 128, 'age': 38, 'price': 39999},
+        {'name': 'OnePlus Nord 3 5G', 'ram': 8, 'storage': 128, 'age': 10, 'price': 33999},
+        {'name': 'OnePlus Nord CE 3', 'ram': 8, 'storage': 128, 'age': 10, 'price': 26999},
+        {'name': 'OnePlus 8T', 'ram': 8, 'storage': 128, 'age': 44, 'price': 42999}
+    ],
+    'Google': [
+        {'name': 'Pixel 8 Pro', 'ram': 12, 'storage': 128, 'age': 7, 'price': 106999},
+        {'name': 'Pixel 8', 'ram': 8, 'storage': 128, 'age': 7, 'price': 75999},
+        {'name': 'Pixel 7 Pro', 'ram': 12, 'storage': 128, 'age': 19, 'price': 84999},
+        {'name': 'Pixel 7', 'ram': 8, 'storage': 128, 'age': 19, 'price': 59999},
+        {'name': 'Pixel 7a', 'ram': 8, 'storage': 128, 'age': 12, 'price': 43999},
+        {'name': 'Pixel 6 Pro', 'ram': 12, 'storage': 128, 'age': 31, 'price': 72000},
+        {'name': 'Pixel 6', 'ram': 8, 'storage': 128, 'age': 31, 'price': 49000},
+        {'name': 'Pixel 6a', 'ram': 6, 'storage': 128, 'age': 24, 'price': 31999}
+    ],
+    'Xiaomi': [
+        {'name': 'Xiaomi 13 Pro', 'ram': 12, 'storage': 256, 'age': 14, 'price': 79999},
+        {'name': 'Xiaomi 12 Pro', 'ram': 8, 'storage': 256, 'age': 25, 'price': 62999},
+        {'name': 'Xiaomi 11T Pro', 'ram': 8, 'storage': 128, 'age': 28, 'price': 39999},
+        {'name': 'Redmi Note 13 Pro+', 'ram': 8, 'storage': 256, 'age': 4, 'price': 31999},
+        {'name': 'Redmi Note 12 Pro', 'ram': 6, 'storage': 128, 'age': 16, 'price': 24999},
+        {'name': 'Redmi Note 11 Pro', 'ram': 6, 'storage': 128, 'age': 26, 'price': 18999},
+        {'name': 'POCO F5 5G', 'ram': 8, 'storage': 256, 'age': 12, 'price': 29999},
+        {'name': 'POCO X5 Pro', 'ram': 6, 'storage': 128, 'age': 15, 'price': 22999}
+    ]
+}
+
+
 # Web Routes
 @app.route('/')
 def home():
@@ -282,7 +342,7 @@ def home():
 
 @app.route('/predict')
 def predict_page():
-    return render_template('predict.html', active='predict')
+    return render_template('predict.html', active='predict', models_by_brand=PHONE_MODELS_BY_BRAND)
 
 
 @app.route('/analytics')
@@ -295,6 +355,12 @@ def about_page():
     return render_template('about.html', active='about')
 
 
+@app.route('/api/models', methods=['GET'])
+def get_phone_models():
+    """Returns the catalog of phone models by brand."""
+    return jsonify({'success': True, 'models': PHONE_MODELS_BY_BRAND})
+
+
 # API Endpoints
 @app.route('/api/predict', methods=['POST'])
 def predict():
@@ -303,6 +369,7 @@ def predict():
         
         # Validations
         brand = str(data.get('brand', '')).strip()
+        phone_model = str(data.get('phone_model', '')).strip()
         condition = str(data.get('condition', '')).strip()
         
         if brand not in le_brand.classes_:
@@ -357,6 +424,8 @@ def predict():
         # Monthly drop rate
         monthly_depreciation = round((original_price - bounded_pred) / max(age, 1), 2)
         
+        device_name = phone_model if phone_model and brand in phone_model else (f"{brand} {phone_model}".strip() if phone_model else brand)
+        
         return jsonify({
             'success': True,
             'predicted_price': round(bounded_pred, 2),
@@ -367,6 +436,8 @@ def predict():
             'original_price': round(original_price, 2),
             'monthly_depreciation': monthly_depreciation,
             'brand': brand,
+            'phone_model': phone_model,
+            'device_name': device_name,
             'condition': condition
         })
     except Exception as e:

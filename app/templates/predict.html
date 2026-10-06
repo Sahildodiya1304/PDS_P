@@ -223,7 +223,7 @@
         background: var(--bg-subtle);
         border: 1px solid var(--border-subtle);
         border-radius: var(--radius-lg);
-        padding: 28px 20px;
+        padding: 24px 20px;
         margin-bottom: 24px;
         transition: border-color 0.3s;
     }
@@ -232,13 +232,27 @@
         border-color: var(--primary);
     }
 
+    .valuation-device-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        font-size: 0.82rem;
+        font-weight: 700;
+        color: var(--primary-light);
+        background: var(--primary-subtle);
+        border: 1px solid var(--border-subtle);
+        padding: 4px 14px;
+        border-radius: 20px;
+        margin-bottom: 12px;
+    }
+
     .valuation-label {
-        font-size: 0.78rem;
+        font-size: 0.75rem;
         font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 0.08em;
         color: var(--text-muted);
-        margin-bottom: 8px;
+        margin-bottom: 6px;
     }
 
     .valuation-amount {
@@ -401,7 +415,7 @@
             <i class="bi bi-lightning-charge-fill"></i> Random Forest Valuation Engine
         </div>
         <h1>Smartphone Fair Market Valuation</h1>
-        <p>Supply current physical attributes to compute accurate secondary market price benchmarks, value retention percentages, and depreciation velocity.</p>
+        <p>Select your brand and model to automatically populate baseline specifications, or customize hardware condition to compute fair market pricing.</p>
     </section>
 
     <!-- Quick Preset Chips -->
@@ -409,20 +423,20 @@
         <div class="presets-label">
             <i class="bi bi-bookmark-star"></i> Quick Benchmarks:
         </div>
-        <button type="button" class="preset-chip" onclick="loadPreset('Apple', 12, 8, 128, 88, 'Excellent', 65000)">
+        <button type="button" class="preset-chip" onclick="loadPreset('Apple', 'iPhone 13', 32, 4, 128, 88, 'Excellent', 59900)">
             Apple iPhone 13 (128GB, Exc)
         </button>
-        <button type="button" class="preset-chip" onclick="loadPreset('Samsung', 18, 8, 256, 84, 'Good', 72000)">
-            Samsung Galaxy S22 (256GB, Good)
+        <button type="button" class="preset-chip" onclick="loadPreset('Samsung', 'Galaxy S22', 26, 8, 128, 84, 'Good', 62999)">
+            Samsung Galaxy S22 (128GB, Good)
         </button>
-        <button type="button" class="preset-chip" onclick="loadPreset('Google', 10, 8, 128, 92, 'Excellent', 59999)">
+        <button type="button" class="preset-chip" onclick="loadPreset('Google', 'Pixel 7', 19, 8, 128, 92, 'Excellent', 59999)">
             Google Pixel 7 (128GB, Exc)
         </button>
-        <button type="button" class="preset-chip" onclick="loadPreset('OnePlus', 24, 8, 128, 80, 'Fair', 38999)">
+        <button type="button" class="preset-chip" onclick="loadPreset('OnePlus', 'OnePlus 10T', 22, 8, 128, 80, 'Fair', 49999)">
             OnePlus 10T (128GB, Fair)
         </button>
-        <button type="button" class="preset-chip" onclick="loadPreset('Xiaomi', 6, 6, 128, 95, 'Excellent', 24999)">
-            Xiaomi Redmi Note (128GB, Exc)
+        <button type="button" class="preset-chip" onclick="loadPreset('Xiaomi', 'Redmi Note 12 Pro', 16, 6, 128, 95, 'Excellent', 24999)">
+            Redmi Note 12 Pro (128GB, Exc)
         </button>
     </div>
 
@@ -437,10 +451,11 @@
 
             <form id="valuationForm">
                 <div class="form-grid">
+                    <!-- Brand Select -->
                     <div class="form-group">
                         <label for="brandSelect">Manufacturer Brand</label>
-                        <select name="brand" id="brandSelect" class="form-control" required>
-                            <option value="Apple">Apple</option>
+                        <select name="brand" id="brandSelect" class="form-control" required onchange="onBrandSelect(this.value)">
+                            <option value="Apple" selected>Apple</option>
                             <option value="Samsung">Samsung</option>
                             <option value="OnePlus">OnePlus</option>
                             <option value="Google">Google</option>
@@ -448,14 +463,27 @@
                         </select>
                     </div>
 
+                    <!-- Phone Model Select (Populated dynamically) -->
+                    <div class="form-group">
+                        <label for="modelSelect">
+                            Phone Model
+                            <span id="modelHint">Auto-populates specs</span>
+                        </label>
+                        <select name="phone_model" id="modelSelect" class="form-control" onchange="onModelSelect(this.value)">
+                            <!-- Populated dynamically via JS -->
+                        </select>
+                    </div>
+
+                    <!-- Age in Months -->
                     <div class="form-group">
                         <label for="ageInput">
                             Device Age (Months)
-                            <span>12 mo = 1 yr</span>
+                            <span id="ageHint">12 mo = 1 yr</span>
                         </label>
                         <input type="number" name="age" id="ageInput" class="form-control" value="12" min="0" max="60" required>
                     </div>
 
+                    <!-- RAM -->
                     <div class="form-group">
                         <label for="ramSelect">RAM Memory</label>
                         <select name="ram" id="ramSelect" class="form-control" required>
@@ -466,6 +494,7 @@
                         </select>
                     </div>
 
+                    <!-- Storage -->
                     <div class="form-group">
                         <label for="storageSelect">Storage Capacity</label>
                         <select name="storage" id="storageSelect" class="form-control" required>
@@ -475,6 +504,7 @@
                         </select>
                     </div>
 
+                    <!-- Battery Health -->
                     <div class="form-group">
                         <label for="batteryInput">
                             Battery Maximum Capacity (%)
@@ -483,6 +513,7 @@
                         <input type="number" name="battery" id="batteryInput" class="form-control" value="85" min="50" max="100" required>
                     </div>
 
+                    <!-- Condition -->
                     <div class="form-group">
                         <label for="conditionSelect">Physical Cosmetic State</label>
                         <select name="condition" id="conditionSelect" class="form-control" required>
@@ -493,12 +524,13 @@
                         </select>
                     </div>
 
-                    <div class="form-group full">
+                    <!-- Original Purchase Price -->
+                    <div class="form-group">
                         <label for="priceInput">
-                            Original MSRP / Purchase Price (₹)
+                            Original Retail Price (₹)
                             <span>Indian Rupee</span>
                         </label>
-                        <input type="number" name="original_price" id="priceInput" class="form-control" value="50000" min="5000" max="250000" step="500" required>
+                        <input type="number" name="original_price" id="priceInput" class="form-control" value="59900" min="5000" max="250000" step="500" required>
                     </div>
 
                     <button type="submit" class="btn-solid btn-submit-calc" id="calcBtn">
@@ -514,12 +546,15 @@
             <div class="report-empty" id="reportPlaceholder">
                 <i class="bi bi-clipboard2-data empty-icon"></i>
                 <h4>Awaiting Specifications</h4>
-                <p>Adjust the attributes on the left or select a flagship preset above, then execute valuation to inspect fair market pricing metrics.</p>
+                <p>Pick a brand and phone model on the left or select a quick flagship preset, then execute valuation to inspect fair market pricing metrics.</p>
             </div>
 
             <!-- Active Valuation Content with Cascade Stagger -->
             <div class="report-content" id="reportContent">
                 <div class="valuation-hero cascade-item cascade-delay-1">
+                    <div class="valuation-device-badge" id="valDeviceBadge">
+                        <i class="bi bi-phone"></i> <span id="valDeviceName">Apple iPhone 13</span>
+                    </div>
                     <div class="valuation-label">Estimated Fair Resale Value</div>
                     <div class="valuation-amount" id="valPrice">₹0</div>
                     <div class="valuation-orig">
@@ -575,9 +610,112 @@
 
 {% block extra_js %}
 <script>
+// Catalog of models with baseline specifications
+const PHONE_MODELS = {
+    'Apple': [
+        {name: 'iPhone 15 Pro Max', ram: 8, storage: 256, age: 8, price: 159900},
+        {name: 'iPhone 15 Pro', ram: 8, storage: 128, age: 8, price: 134900},
+        {name: 'iPhone 15', ram: 6, storage: 128, age: 8, price: 79900},
+        {name: 'iPhone 14 Pro Max', ram: 6, storage: 128, age: 20, price: 139900},
+        {name: 'iPhone 14', ram: 6, storage: 128, age: 20, price: 69900},
+        {name: 'iPhone 13 Pro', ram: 6, storage: 128, age: 32, price: 119900},
+        {name: 'iPhone 13', ram: 4, storage: 128, age: 32, price: 59900},
+        {name: 'iPhone 12', ram: 4, storage: 64, age: 44, price: 49900},
+        {name: 'iPhone 11', ram: 4, storage: 64, age: 56, price: 41900},
+        {name: 'iPhone SE (3rd Gen)', ram: 4, storage: 64, age: 28, price: 43900}
+    ],
+    'Samsung': [
+        {name: 'Galaxy S23 Ultra', ram: 12, storage: 256, age: 14, price: 124999},
+        {name: 'Galaxy S23', ram: 8, storage: 128, age: 14, price: 74999},
+        {name: 'Galaxy S22 Ultra', ram: 12, storage: 256, age: 26, price: 109999},
+        {name: 'Galaxy S22', ram: 8, storage: 128, age: 26, price: 62999},
+        {name: 'Galaxy S21 FE 5G', ram: 8, storage: 128, age: 28, price: 49999},
+        {name: 'Galaxy Z Fold 4', ram: 12, storage: 256, age: 22, price: 154999},
+        {name: 'Galaxy Z Flip 4', ram: 8, storage: 128, age: 22, price: 89999},
+        {name: 'Galaxy A54 5G', ram: 8, storage: 128, age: 14, price: 38999},
+        {name: 'Galaxy A34 5G', ram: 8, storage: 128, age: 14, price: 30999},
+        {name: 'Galaxy Note 20 Ultra', ram: 12, storage: 256, age: 46, price: 104999}
+    ],
+    'OnePlus': [
+        {name: 'OnePlus 11 5G', ram: 12, storage: 256, age: 15, price: 61999},
+        {name: 'OnePlus 11R', ram: 8, storage: 128, age: 14, price: 39999},
+        {name: 'OnePlus 10 Pro', ram: 8, storage: 128, age: 26, price: 66999},
+        {name: 'OnePlus 10T', ram: 8, storage: 128, age: 22, price: 49999},
+        {name: 'OnePlus 9 Pro', ram: 8, storage: 128, age: 38, price: 64999},
+        {name: 'OnePlus 9R', ram: 8, storage: 128, age: 38, price: 39999},
+        {name: 'OnePlus Nord 3 5G', ram: 8, storage: 128, age: 10, price: 33999},
+        {name: 'OnePlus Nord CE 3', ram: 8, storage: 128, age: 10, price: 26999},
+        {name: 'OnePlus 8T', ram: 8, storage: 128, age: 44, price: 42999}
+    ],
+    'Google': [
+        {name: 'Pixel 8 Pro', ram: 12, storage: 128, age: 7, price: 106999},
+        {name: 'Pixel 8', ram: 8, storage: 128, age: 7, price: 75999},
+        {name: 'Pixel 7 Pro', ram: 12, storage: 128, age: 19, price: 84999},
+        {name: 'Pixel 7', ram: 8, storage: 128, age: 19, price: 59999},
+        {name: 'Pixel 7a', ram: 8, storage: 128, age: 12, price: 43999},
+        {name: 'Pixel 6 Pro', ram: 12, storage: 128, age: 31, price: 72000},
+        {name: 'Pixel 6', ram: 8, storage: 128, age: 31, price: 49000},
+        {name: 'Pixel 6a', ram: 6, storage: 128, age: 24, price: 31999}
+    ],
+    'Xiaomi': [
+        {name: 'Xiaomi 13 Pro', ram: 12, storage: 256, age: 14, price: 79999},
+        {name: 'Xiaomi 12 Pro', ram: 8, storage: 256, age: 25, price: 62999},
+        {name: 'Xiaomi 11T Pro', ram: 8, storage: 128, age: 28, price: 39999},
+        {name: 'Redmi Note 13 Pro+', ram: 8, storage: 256, age: 4, price: 31999},
+        {name: 'Redmi Note 12 Pro', ram: 6, storage: 128, age: 16, price: 24999},
+        {name: 'Redmi Note 11 Pro', ram: 6, storage: 128, age: 26, price: 18999},
+        {name: 'POCO F5 5G', ram: 8, storage: 256, age: 12, price: 29999},
+        {name: 'POCO X5 Pro', ram: 6, storage: 128, age: 15, price: 22999}
+    ]
+};
+
+// Update Model Dropdown when Brand Changes
+function onBrandSelect(brand) {
+    const modelSelect = document.getElementById('modelSelect');
+    modelSelect.innerHTML = '';
+    
+    const models = PHONE_MODELS[brand] || [];
+    models.forEach((m, idx) => {
+        const opt = document.createElement('option');
+        opt.value = m.name;
+        opt.textContent = m.name;
+        if (idx === 0) opt.selected = true;
+        modelSelect.appendChild(opt);
+    });
+    
+    if (models.length > 0) {
+        applyModelDefaults(models[0]);
+    }
+}
+
+// Update Specs when a Model is picked
+function onModelSelect(modelName) {
+    const brand = document.getElementById('brandSelect').value;
+    const models = PHONE_MODELS[brand] || [];
+    const found = models.find(m => m.name === modelName);
+    if (found) {
+        applyModelDefaults(found);
+        showToast(`Loaded ${found.name} specs`, 'info');
+    }
+}
+
+function applyModelDefaults(modelObj) {
+    if (modelObj.ram) document.getElementById('ramSelect').value = modelObj.ram;
+    if (modelObj.storage) document.getElementById('storageSelect').value = modelObj.storage;
+    if (modelObj.age !== undefined) {
+        document.getElementById('ageInput').value = modelObj.age;
+        const yrs = (modelObj.age / 12).toFixed(1);
+        document.getElementById('ageHint').textContent = `${modelObj.age} mo (~${yrs} yrs)`;
+    }
+    if (modelObj.price) document.getElementById('priceInput').value = modelObj.price;
+}
+
 // Preset Loader
-function loadPreset(brand, age, ram, storage, battery, condition, originalPrice) {
+function loadPreset(brand, modelName, age, ram, storage, battery, condition, originalPrice) {
     document.getElementById('brandSelect').value = brand;
+    onBrandSelect(brand);
+    
+    document.getElementById('modelSelect').value = modelName;
     document.getElementById('ageInput').value = age;
     document.getElementById('ramSelect').value = ram;
     document.getElementById('storageSelect').value = storage;
@@ -586,7 +724,7 @@ function loadPreset(brand, age, ram, storage, battery, condition, originalPrice)
     document.getElementById('conditionSelect').value = condition;
     document.getElementById('priceInput').value = originalPrice;
     
-    showToast(`Loaded benchmark preset: ${brand} (${storage}GB)`, 'info');
+    showToast(`Loaded benchmark preset: ${modelName}`, 'info');
     
     // Trigger submission automatically for instant feedback
     document.getElementById('valuationForm').dispatchEvent(new Event('submit'));
@@ -595,6 +733,13 @@ function loadPreset(brand, age, ram, storage, battery, condition, originalPrice)
 // Battery label feedback
 document.getElementById('batteryInput').addEventListener('input', function() {
     document.getElementById('batteryBadge').textContent = this.value + '%';
+});
+
+// Age label feedback
+document.getElementById('ageInput').addEventListener('input', function() {
+    const val = parseInt(this.value, 10) || 0;
+    const yrs = (val / 12).toFixed(1);
+    document.getElementById('ageHint').textContent = `${val} mo (~${yrs} yrs)`;
 });
 
 // Form Submission Handler with Counter Animation
@@ -629,6 +774,10 @@ document.getElementById('valuationForm').addEventListener('submit', async functi
                 el.offsetHeight; /* trigger reflow */
                 el.style.animation = null;
             });
+            
+            // Device name badge
+            const devName = result.device_name || result.brand;
+            document.getElementById('valDeviceName').textContent = `${devName} (${payload.storage || '128'}GB)`;
             
             // Animated price counter
             animateCounter(document.getElementById('valPrice'), 0, result.predicted_price, 900, '₹');
@@ -676,7 +825,7 @@ document.getElementById('valuationForm').addEventListener('submit', async functi
             document.getElementById('valStatus').textContent = status;
             document.getElementById('adviceText').textContent = advice;
             
-            showToast('Valuation generated successfully', 'success');
+            showToast(`Valuation computed for ${devName}`, 'success');
         } else {
             showToast(result.error || 'Prediction failed', 'error');
         }
@@ -686,6 +835,11 @@ document.getElementById('valuationForm').addEventListener('submit', async functi
         btn.disabled = false;
         btn.innerHTML = '<i class="bi bi-cpu"></i> Compute Fair Valuation';
     }
+});
+
+// Initialize Model Dropdown on Page Load
+window.addEventListener('DOMContentLoaded', () => {
+    onBrandSelect(document.getElementById('brandSelect').value);
 });
 </script>
 {% endblock %}
